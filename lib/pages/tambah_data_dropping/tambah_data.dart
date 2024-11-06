@@ -1,5 +1,8 @@
 import 'dart:convert'; // Add this import for JSON encoding
 import 'dart:ui';
+
+import 'package:path_provider/path_provider.dart';
+import 'package:archive/archive.dart';
 import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -21,6 +24,43 @@ class _TambahDataDroppingPasienState extends State<TambahDataDroppingPasien> {
   final temaController = TextEditingController();
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
+  List<String> _extractedFiles = [];
+
+  Future<void> extractZipAndDisplay(String zipFilePath) async {
+    try {
+      // Open the ZIP file
+      File zipFile = File(zipFilePath);
+      List<int> bytes = await zipFile.readAsBytes();
+
+      // Decode the ZIP file
+      Archive archive = ZipDecoder().decodeBytes(bytes);
+
+      // Get the app's document directory to store extracted files
+      Directory tempDir = await getTemporaryDirectory();
+      String extractPath = '${tempDir.path}/extracted_files';
+      await Directory(extractPath).create(recursive: true);
+
+      // Extract the files
+      List<String> extractedFilePaths = [];
+      for (var file in archive) {
+        if (file.isFile) {
+          // Write the file to disk
+          String filePath = '$extractPath/${file.name}';
+          File outputFile = File(filePath);
+          await outputFile.writeAsBytes(file.content);
+
+          extractedFilePaths.add(filePath);
+        }
+      }
+
+      // Update state to display the extracted files
+      setState(() {
+        _extractedFiles = extractedFilePaths;
+      });
+    } catch (e) {
+      print("Error extracting ZIP file: $e");
+    }
+  }
 
   void clearForm() {
     temaController.clear();
@@ -343,7 +383,7 @@ class _TambahDataDroppingPasienState extends State<TambahDataDroppingPasien> {
 // Fungsi untuk mengirim data ke server
   Future<void> tambahData() async {
     // URL API untuk upload file
-    String url = 'http://10.0.10.58:3000/api/uploadFile';
+    String url = 'http://192.168.1.9:3000/api/uploadFile';
     var request = http.MultipartRequest('POST', Uri.parse(url));
 
     // Menambahkan field teks ke dalam request

@@ -1,7 +1,11 @@
+import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:final_keswamas/model/keswamas_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:archive/archive.dart';
+import 'package:path_provider/path_provider.dart';
 
 class DataDroppingPasienDetail extends StatefulWidget {
   final String id;
@@ -22,8 +26,10 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
   );
 
   GetFile getFile = GetFile(gambar: '');
+  List<GetFileEach> getFileEach = [];
   bool isLoading = true;
   bool isImageExpanded = false;
+  List<String> _extractedFiles = [];
 
   @override
   void initState() {
@@ -35,9 +41,11 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
     final dataDrop =
         await DroppingPasienDetail.getDroppingPasienDetail(widget.id);
     final getFileDrop = await GetFile.getFile(widget.id);
+    final getFileEachDrop = await GetFileEach.getFileEach(widget.id);
     setState(() {
       droppingPasienDetail = dataDrop;
       getFile = getFileDrop;
+      getFileEach = getFileEachDrop;
       isLoading = false;
     });
   }
@@ -55,6 +63,48 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
     setState(() {
       isImageExpanded = !isImageExpanded;
     });
+  }
+
+  Future<void> downloadAndExtractZip(String url) async {
+    try {
+      // Step 1: Download the ZIP file from the URL
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        // Step 2: Get the bytes from the response
+        List<int> bytes = response.bodyBytes;
+
+        // Step 3: Decode the ZIP file
+        Archive archive = ZipDecoder().decodeBytes(bytes);
+
+        // Step 4: Get the app's document directory to store extracted files
+        Directory tempDir = await getTemporaryDirectory();
+        String extractPath = '${tempDir.path}/extracted_files';
+        await Directory(extractPath).create(recursive: true);
+
+        // Step 5: Extract the files and store their paths
+        List<String> extractedFilePaths = [];
+        for (var file in archive) {
+          if (file.isFile) {
+            // Write the file to disk
+            String filePath = '$extractPath/${file.name}';
+            File outputFile = File(filePath);
+            await outputFile.writeAsBytes(file.content);
+
+            extractedFilePaths.add(filePath);
+          }
+        }
+
+        // Step 6: Update the state with the extracted files
+        setState(() {
+          _extractedFiles = extractedFilePaths;
+        });
+      } else {
+        throw Exception('Failed to download the file');
+      }
+    } catch (e) {
+      print("Error downloading or extracting ZIP file: $e");
+    }
   }
 
   Widget _buildImageViewer() {
@@ -79,9 +129,10 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
                     ),
                   ),
                   TextButton.icon(
-                    onPressed: () => launchUrl(Uri.parse(getFile.gambar)),
-                    icon: const Icon(Icons.download),
-                    label: const Text('Download'),
+                    // onPressed: () => launchUrl(Uri.parse(getFile.gambar)),
+                    onPressed: () => downloadAndExtractZip(getFile.gambar),
+                    icon: const Icon(Icons.open_in_new),
+                    label: const Text('Display Image'),
                   ),
                 ],
               ),
@@ -96,42 +147,34 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
               child: InteractiveViewer(
                 minScale: 0.5,
                 maxScale: 4.0,
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: getFile.gambar.length,
-                    itemBuilder: (context, index) {
-                      return Image.network(
-                        getFile.gambar[index],
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Center(
-                          child: Icon(
-                            Icons.broken_image_outlined,
-                            size: 64,
-                            color: Colors.grey,
-                          ),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  separatorBuilder: (context, index) => const SizedBox(
+                    height: 16,
+                  ),
+                  itemCount: _extractedFiles.length,
+                  itemBuilder: (context, index) {
+                    // Display images from extracted files
+                    return Image.file(
+                      File(_extractedFiles[index]),
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Center(
+                        child: Icon(
+                          Icons.broken_image_outlined,
+                          size: 64,
+                          color: Colors.grey,
                         ),
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                  : null,
-                            ),
-                          );
-                        },
-                      );
-                    }),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(16),
               child: Text(
-                isImageExpanded
-                    ? 'Ketuk untuk memperkecil'
-                    : 'Ketuk untuk memperbesar',
+                isImageExpanded ? 'Tap to reduce size' : 'Tap to enlarge',
                 style: TextStyle(
                   color: Colors.grey[600],
                   fontSize: 12,

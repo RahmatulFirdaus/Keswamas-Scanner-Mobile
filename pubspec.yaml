@@ -28,8 +28,10 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  archive: ^3.6.1
   cunning_document_scanner: ^1.2.3
   cupertino_icons: ^1.0.8
+  file: ^7.0.1
   flutter:
     sdk: flutter
   http: ^1.2.2
