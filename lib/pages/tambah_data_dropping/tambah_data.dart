@@ -310,76 +310,116 @@ class _TambahDataDroppingPasienState extends State<TambahDataDroppingPasien> {
     );
   }
 
+  // Fungsi untuk memindai dokumen menggunakan plugin CunningDocumentScanner
   void scanDocument() async {
-    List<String> pictures;
+    List<String> pictures; // Daftar untuk menyimpan path gambar hasil scan
     try {
+      // Memanggil plugin CunningDocumentScanner untuk mengambil gambar, dengan pengaturan:
+      // - noOfPages: 1 (jumlah halaman yang ingin discan)
+      // - isGalleryImportAllowed: true (mengizinkan impor dari galeri)
       pictures = await CunningDocumentScanner.getPictures(
-            noOfPages: 1,
+            noOfPages: 100,
             isGalleryImportAllowed: true,
           ) ??
           [];
+
+      // Jika widget ini tidak lagi terpasang di layar, hentikan proses
       if (!mounted) return;
+
+      // Update state dengan hasil gambar
       setState(() {
-        _pictures = pictures;
-        _files = pictures.map((path) => File(path)).toList();
+        _pictures = pictures; // Menyimpan path gambar dalam state
+        _files = pictures
+            .map((path) => File(path))
+            .toList(); // Mengonversi path menjadi daftar objek File
       });
     } catch (exception) {
+      // Jika terjadi kesalahan, periksa apakah widget masih terpasang, lalu cetak error
       if (!mounted) return;
-      print("exception: $exception");
+      print("exception: $exception"); // Mencetak pesan error
     }
   }
 
+// Fungsi untuk mengirim data ke server
   Future<void> tambahData() async {
+    // URL API untuk upload file
     String url = 'http://10.0.10.58:3000/api/uploadFile';
     var request = http.MultipartRequest('POST', Uri.parse(url));
 
-    // Add text fields
-    request.fields['tema_kegiatan'] = temaController.text;
-    request.fields['tanggal_kegiatan'] = tanggalController.text;
-    request.fields['tanggal_pembuatan'] = DateTime.now().toString();
+    // Menambahkan field teks ke dalam request
+    request.fields['tema_kegiatan'] = temaController.text; // Tema kegiatan
+    request.fields['tanggal_kegiatan'] =
+        tanggalController.text; // Tanggal kegiatan
+    request.fields['tanggal_pembuatan'] = DateTime.now()
+        .toString(); // Tanggal pembuatan otomatis (tanggal saat ini)
 
-    // Add files
+    // Menambahkan file ke dalam request
     for (File file in _files) {
-      var stream = http.ByteStream(file.openRead().cast());
-      var length = await file.length();
+      var stream = http.ByteStream(
+          file.openRead().cast()); // Membaca file sebagai stream
+      var length = await file.length(); // Mendapatkan ukuran file
       request.files.add(http.MultipartFile(
-        'file',
-        stream,
-        length,
-        filename: file.path.split('/').last,
+        'file', // Nama field untuk file pada server
+        stream, // Stream data file
+        length, // Panjang file dalam byte
+        filename: file.path.split('/').last, // Nama file
       ));
     }
 
     try {
+      // Mengirim request ke server
       var response = await request.send();
 
       if (response.statusCode == 200) {
-        // Handle successful response
-        var responseData = await http.Response.fromStream(response);
-        var jsonResponse = jsonDecode(responseData.body);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Data berhasil ditambahkan')),
-        );
-        print('Data added successfully: $jsonResponse');
-        clearForm(); // Clear the form after successful submission
-        Navigator.pop(context);
+        // Jika respons berhasil (status 200)
+        var responseData = await http.Response.fromStream(
+            response); // Membaca data respons dari stream
+        var jsonResponse =
+            jsonDecode(responseData.body); // Mengonversi respons menjadi JSON
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text(
+                    'Data berhasil ditambahkan')), // Menampilkan pesan sukses
+          );
+        }
+        print(
+            'Data added successfully: $jsonResponse'); // Mencetak data hasil respons
+
+        clearForm(); // Mengosongkan form setelah pengiriman sukses
+        Navigator.pop(context); // Kembali ke halaman sebelumnya
       } else {
-        // Handle error response
-        print('Failed to add data: ${response.statusCode}');
-        print('Tema: ${temaController.text}');
-        print('Tanggal: ${tanggalController.text}');
-        print('Tanggal Pembuatan: ${DateTime.now()}');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content:
-                  Text('Gagal menambahkan data: ${response.reasonPhrase}')),
-        );
+        // Jika terjadi kesalahan saat menambahkan data
+        var responseData = await http.Response.fromStream(response);
+        print(
+            'Failed to add data: ${response.statusCode}'); // Mencetak status kode error
+        print(
+            'Response body: ${responseData.body}'); // Mencetak data error dari server
+        print('Tema: ${temaController.text}'); // Debug: mencetak nilai tema
+        print(
+            'Tanggal: ${tanggalController.text}'); // Debug: mencetak nilai tanggal kegiatan
+        print(
+            'Tanggal Pembuatan: ${DateTime.now()}'); // Debug: mencetak nilai tanggal pembuatan
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    'Gagal menambahkan data: ${response.reasonPhrase}')), // Menampilkan pesan error
+          );
+        }
       }
     } catch (e) {
-      print('Exception: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Terjadi kesalahan saat mengirim data')),
-      );
+      // Penanganan kesalahan saat mengirim data
+      print('Exception: $e'); // Mencetak pesan error
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text(
+                  'Terjadi kesalahan saat mengirim data')), // Menampilkan pesan error
+        );
+      }
     }
   }
 }

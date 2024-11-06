@@ -16,12 +16,12 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
   DroppingPasienDetail droppingPasienDetail = DroppingPasienDetail(
     id: "",
     tema_kegiatan: "",
-    file: "",
+    gambar: "",
     tanggal_kegiatan: "",
     tanggal_pembuatan: "",
   );
 
-  GetFile getFile = GetFile(file: '');
+  GetFile getFile = GetFile(gambar: '');
   bool isLoading = true;
   bool isImageExpanded = false;
 
@@ -79,7 +79,7 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
                     ),
                   ),
                   TextButton.icon(
-                    onPressed: () => launchUrl(Uri.parse(getFile.file)),
+                    onPressed: () => launchUrl(Uri.parse(getFile.gambar)),
                     icon: const Icon(Icons.download),
                     label: const Text('Download'),
                   ),
@@ -96,28 +96,34 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
               child: InteractiveViewer(
                 minScale: 0.5,
                 maxScale: 4.0,
-                child: Image.network(
-                  getFile.file,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) => const Center(
-                    child: Icon(
-                      Icons.broken_image_outlined,
-                      size: 64,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
-                            : null,
-                      ),
-                    );
-                  },
-                ),
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: getFile.gambar.length,
+                    itemBuilder: (context, index) {
+                      return Image.network(
+                        getFile.gambar[index],
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Center(
+                          child: Icon(
+                            Icons.broken_image_outlined,
+                            size: 64,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          );
+                        },
+                      );
+                    }),
               ),
             ),
             Padding(

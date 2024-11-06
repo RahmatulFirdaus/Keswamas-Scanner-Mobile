@@ -4,14 +4,12 @@ import 'package:http/http.dart' as http;
 class DroppingPasien {
   String id;
   String tema_kegiatan;
-  String file;
   String tanggal_kegiatan;
   String tanggal_pembuatan;
 
   DroppingPasien(
       {required this.id,
       required this.tema_kegiatan,
-      required this.file,
       required this.tanggal_kegiatan,
       required this.tanggal_pembuatan});
 
@@ -24,7 +22,6 @@ class DroppingPasien {
       return DroppingPasien(
         id: e['id'].toString(),
         tema_kegiatan: e['tema_kegiatan'],
-        file: e['file'],
         tanggal_kegiatan: e['tanggal_kegiatan'],
         tanggal_pembuatan: e['tanggal_pembuatan'],
       );
@@ -35,14 +32,14 @@ class DroppingPasien {
 class DroppingPasienDetail {
   String id;
   String tema_kegiatan;
-  String file;
+  String gambar;
   String tanggal_kegiatan;
   String tanggal_pembuatan;
 
   DroppingPasienDetail(
       {required this.id,
       required this.tema_kegiatan,
-      required this.file,
+      required this.gambar,
       required this.tanggal_kegiatan,
       required this.tanggal_pembuatan});
 
@@ -54,7 +51,7 @@ class DroppingPasienDetail {
     return DroppingPasienDetail(
       id: user['id'].toString(),
       tema_kegiatan: user['tema_kegiatan'],
-      file: user['file'],
+      gambar: user['gambar'],
       tanggal_kegiatan: user['tanggal_kegiatan'],
       tanggal_pembuatan: user['tanggal_pembuatan'],
     );
@@ -62,15 +59,15 @@ class DroppingPasienDetail {
 }
 
 class GetFile {
-  String file;
+  String gambar;
 
-  GetFile({required this.file});
+  GetFile({required this.gambar});
 
   static Future<GetFile> getFile(String id) async {
     var url = Uri.parse('http://10.0.10.58:3000/api/getFileLink/$id');
     var response = await http.get(url);
     var json = jsonDecode(response.body);
     var file = json['data']['file']; // Access the 'file' directly within 'data'
-    return GetFile(file: file);
+    return GetFile(gambar: file);
   }
 }
