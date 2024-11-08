@@ -1,5 +1,7 @@
+import 'package:final_keswamas/login/login_page.dart';
 import 'package:final_keswamas/pages/dashboard.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,6 +16,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Keswamas',
-        home: Dashboard());
+        theme: ThemeData(
+          textTheme: GoogleFonts.comfortaaTextTheme(),
+        ),
+        home: LoginPage());
   }
 }
