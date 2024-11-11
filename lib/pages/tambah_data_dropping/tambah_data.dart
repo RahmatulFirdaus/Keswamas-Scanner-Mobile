@@ -343,7 +343,7 @@ class _TambahDataDroppingPasienState extends State<TambahDataDroppingPasien> {
 // Fungsi untuk mengirim data ke server
   Future<void> tambahData() async {
     // URL API untuk upload file
-    String url = 'http://192.168.1.9:3000/api/uploadFile';
+    String url = 'http://10.0.10.58:3000/api/uploadFile';
     var request = http.MultipartRequest('POST', Uri.parse(url));
 
     // Menambahkan field teks ke dalam request

@@ -6,20 +6,25 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class AuthService {
   final storage = FlutterSecureStorage();
 
-  Future<void> login(String username, String password) async {
+  Future<String?> login(String username, String password) async {
     var url = Uri.parse('http://10.0.10.58:3000/api/login');
     var response = await http.post(url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'username': username, 'password': password}));
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final token = data['token'];
-      final refreshToken = data['refresh_token'];
+      final json = jsonDecode(response.body);
+      final token = json['data']['token'];
+      final refreshToken = json['data']['refreshToken'];
 
       await storage.write(key: 'jwt_token', value: token);
       await storage.write(key: 'refresh_token', value: refreshToken);
+
+      return null;
     } else {
-      throw Exception('Failed to login');
+      final json = jsonDecode(response.body);
+      final pesan = json['pesan'];
+      print(pesan);
+      return pesan;
     }
   }
 

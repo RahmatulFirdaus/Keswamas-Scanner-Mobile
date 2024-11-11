@@ -14,7 +14,7 @@ class DroppingPasien {
       required this.tanggal_pembuatan});
 
   static Future<List<DroppingPasien>> getDroppingPasien() async {
-    var url = Uri.parse('http://192.168.1.9:3000/api/getDropping');
+    var url = Uri.parse('http://10.0.10.58:3000/api/getDropping');
     var response = await http.get(url);
     var json = jsonDecode(response.body);
     var dataList = json['data'] as List;
@@ -44,7 +44,7 @@ class DroppingPasienDetail {
       required this.tanggal_pembuatan});
 
   static Future<DroppingPasienDetail> getDroppingPasienDetail(String id) async {
-    var url = Uri.parse('http://192.168.1.9:3000/api/getDroppingDetail/$id');
+    var url = Uri.parse('http://10.0.10.58:3000/api/getDroppingDetail/$id');
     var response = await http.get(url);
     var json = jsonDecode(response.body);
     var user = json['data'][0];
@@ -64,7 +64,7 @@ class GetFile {
   GetFile({required this.gambar});
 
   static Future<GetFile> getFile(String id) async {
-    var url = Uri.parse('http://192.168.1.9:3000/api/getFileLink/$id');
+    var url = Uri.parse('http://10.0.10.58:3000/api/getFileLink/$id');
     var response = await http.get(url);
     var json = jsonDecode(response.body);
     var file = json['data']['file']; // Access the 'file' directly within 'data'
@@ -79,7 +79,7 @@ class GetFileEach {
       {required this.id, required this.id_dropping, required this.gambar});
 
   static Future<List<GetFileEach>> getFileEach(String id) async {
-    var url = Uri.parse('http://192.168.1.9:3000/api/getFileEach/$id');
+    var url = Uri.parse('http://10.0.10.58:3000/api/getFileEach/$id');
     var response = await http.get(url);
     var json = jsonDecode(response.body);
     var dataList = json['data'] as List;

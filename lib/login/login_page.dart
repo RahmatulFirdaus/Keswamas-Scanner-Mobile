@@ -1,5 +1,8 @@
 import 'package:final_keswamas/login/register_page.dart';
+import 'package:final_keswamas/pages/dashboard.dart';
+import 'package:final_keswamas/services/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:toastification/toastification.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,6 +14,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  AuthService authService = AuthService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,7 +55,54 @@ class _LoginPageState extends State<LoginPage> {
                 height: 60,
                 margin: EdgeInsets.symmetric(horizontal: 20),
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    if (usernameController.text.isNotEmpty &&
+                        passwordController.text.isNotEmpty) {
+                      try {
+                        String? result = await authService.login(
+                            usernameController.text, passwordController.text);
+                        if (result == null) {
+                          Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: (context) => Dashboard()));
+                        } else {
+                          toastification.show(
+                            alignment: Alignment.topCenter,
+                            autoCloseDuration: Duration(seconds: 5),
+                            style: ToastificationStyle.flat,
+                            type: ToastificationType.error,
+                            icon: Icon(Icons.error_outline),
+                            context: context,
+                            title: Text("Login Gagal"),
+                            description: Text("${result}"),
+                          );
+                        }
+                      } catch (e) {
+                        toastification.show(
+                          alignment: Alignment.topCenter,
+                          autoCloseDuration: Duration(seconds: 5),
+                          style: ToastificationStyle.flat,
+                          type: ToastificationType.error,
+                          icon: Icon(Icons.error_outline),
+                          context: context,
+                          title: Text("Login Gagal"),
+                          description: Text("Terjadi Kesalahan"),
+                        );
+                      }
+                    } else {
+                      toastification.show(
+                        alignment: Alignment.topCenter,
+                        autoCloseDuration: Duration(seconds: 5),
+                        style: ToastificationStyle.flat,
+                        type: ToastificationType.error,
+                        icon: Icon(Icons.error_outline),
+                        context: context,
+                        title: Text("Login Gagal"),
+                        description:
+                            Text("Username dan Password tidak boleh kosong"),
+                      );
+                    }
+                  },
                   child: Text("Login"),
                   style: ButtonStyle(),
                 ),
