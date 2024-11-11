@@ -92,3 +92,22 @@ class GetFileEach {
     }).toList();
   }
 }
+
+class RegisterUser {
+  Future<String> register(String username, String password,
+      String confirmPassword, String email) async {
+    var url = Uri.parse('http://10.0.10.58:3000/api/registerUser');
+    var response = await http.post(url, body: {
+      'username': username,
+      'password': password,
+      'confirmPassword': confirmPassword,
+      'email': email
+    });
+    var json = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      return json['pesan'];
+    } else {
+      return json['pesan'];
+    }
+  }
+}

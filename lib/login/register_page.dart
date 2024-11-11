@@ -1,5 +1,7 @@
 import 'package:final_keswamas/login/login_page.dart';
+import 'package:final_keswamas/model/keswamas_model.dart';
 import 'package:flutter/material.dart';
+import 'package:toastification/toastification.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -11,6 +13,9 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController passwordConfirmController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  RegisterUser registerUser = RegisterUser();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +38,15 @@ class _RegisterPageState extends State<RegisterPage> {
                 controller: usernameController,
                 decoration: InputDecoration(
                     labelText: "Username",
-                    prefixIcon: Icon(Icons.email_outlined)),
+                    prefixIcon: Icon(Icons.person_outline)),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              TextField(
+                controller: emailController,
+                decoration: InputDecoration(
+                    labelText: "Email", prefixIcon: Icon(Icons.email_outlined)),
               ),
               SizedBox(
                 height: 10,
@@ -47,11 +60,65 @@ class _RegisterPageState extends State<RegisterPage> {
               SizedBox(
                 height: 30,
               ),
+              TextField(
+                controller: passwordConfirmController,
+                decoration: InputDecoration(
+                    labelText: "Password Confirm",
+                    prefixIcon: Icon(Icons.lock_person_outlined)),
+              ),
+              SizedBox(
+                height: 30,
+              ),
               Container(
                 height: 60,
                 margin: EdgeInsets.symmetric(horizontal: 20),
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    if (usernameController.text.isNotEmpty &&
+                        passwordController.text.isNotEmpty &&
+                        emailController.text.isNotEmpty &&
+                        passwordConfirmController.text.isNotEmpty) {
+                      try {
+                        String result = await registerUser.register(
+                            usernameController.text,
+                            passwordController.text,
+                            passwordConfirmController.text,
+                            emailController.text);
+                        toastification.show(
+                          alignment: Alignment.topCenter,
+                          autoCloseDuration: Duration(seconds: 5),
+                          style: ToastificationStyle.flat,
+                          type: ToastificationType.error,
+                          icon: Icon(Icons.error_outline),
+                          context: context,
+                          title: Text("${result}"),
+                          // description: Text(""),
+                        );
+                      } catch (e) {
+                        toastification.show(
+                          alignment: Alignment.topCenter,
+                          autoCloseDuration: Duration(seconds: 5),
+                          style: ToastificationStyle.flat,
+                          type: ToastificationType.error,
+                          icon: Icon(Icons.error_outline),
+                          context: context,
+                          title: Text("Daftar Akun Gagal"),
+                          description: Text("Terjadi Kesalahan"),
+                        );
+                      }
+                    } else {
+                      toastification.show(
+                        alignment: Alignment.topCenter,
+                        autoCloseDuration: Duration(seconds: 5),
+                        style: ToastificationStyle.flat,
+                        type: ToastificationType.error,
+                        icon: Icon(Icons.error_outline),
+                        context: context,
+                        title: Text("Daftar Akun Gagal"),
+                        description: Text("Field tidak boleh kosong"),
+                      );
+                    }
+                  },
                   child: Text("Register"),
                   style: ButtonStyle(),
                 ),
