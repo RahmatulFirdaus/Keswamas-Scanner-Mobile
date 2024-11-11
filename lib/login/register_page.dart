@@ -58,7 +58,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     prefixIcon: Icon(Icons.lock_outline)),
               ),
               SizedBox(
-                height: 30,
+                height: 10,
               ),
               TextField(
                 controller: passwordConfirmController,
@@ -79,21 +79,34 @@ class _RegisterPageState extends State<RegisterPage> {
                         emailController.text.isNotEmpty &&
                         passwordConfirmController.text.isNotEmpty) {
                       try {
-                        String result = await registerUser.register(
+                        String? result = await registerUser.register(
                             usernameController.text,
                             passwordController.text,
                             passwordConfirmController.text,
                             emailController.text);
-                        toastification.show(
-                          alignment: Alignment.topCenter,
-                          autoCloseDuration: Duration(seconds: 5),
-                          style: ToastificationStyle.flat,
-                          type: ToastificationType.error,
-                          icon: Icon(Icons.error_outline),
-                          context: context,
-                          title: Text("${result}"),
-                          // description: Text(""),
-                        );
+                        if (result == null) {
+                          toastification.show(
+                            alignment: Alignment.topCenter,
+                            autoCloseDuration: Duration(seconds: 5),
+                            style: ToastificationStyle.flat,
+                            type: ToastificationType.error,
+                            icon: Icon(Icons.error_outline),
+                            context: context,
+                            title: Text("${result}"),
+                            description: Text("Akun Berhasil Didaftarkan"),
+                          );
+                        } else {
+                          toastification.show(
+                            alignment: Alignment.topCenter,
+                            autoCloseDuration: Duration(seconds: 5),
+                            style: ToastificationStyle.flat,
+                            type: ToastificationType.error,
+                            icon: Icon(Icons.error_outline),
+                            context: context,
+                            title: Text("Terjadi Kesalahan"),
+                            description: Text("${result}"),
+                          );
+                        }
                       } catch (e) {
                         toastification.show(
                           alignment: Alignment.topCenter,
@@ -102,8 +115,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           type: ToastificationType.error,
                           icon: Icon(Icons.error_outline),
                           context: context,
-                          title: Text("Daftar Akun Gagal"),
-                          description: Text("Terjadi Kesalahan"),
+                          title: Text("Terjadi Kesalahan"),
+                          description: Text("Daftar Akun Gagal"),
                         );
                       }
                     } else {
