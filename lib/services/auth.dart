@@ -14,10 +14,12 @@ class AuthService {
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
       final token = json['data']['token'];
-      final refreshToken = json['data']['refreshToken'];
+      final refreshToken = json['data']['refresh_token'];
 
       await storage.write(key: 'jwt_token', value: token);
       await storage.write(key: 'refresh_token', value: refreshToken);
+      print("${token}");
+      print("${refreshToken}");
 
       return null;
     } else {
@@ -28,7 +30,7 @@ class AuthService {
     }
   }
 
-  Future<void> refreshJwtToken() async {
+  Future<String> refreshJwtToken() async {
     final refreshToken = await storage.read(key: 'refresh_token');
 
     if (refreshToken == null) {
@@ -39,13 +41,16 @@ class AuthService {
     var response = await http.post(url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'refresh_token': refreshToken}));
+    final json = jsonDecode(response.body);
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final newToken = data['token'];
+      final newToken = json['token'];
+      final pesan = json['pesan'];
 
       await storage.write(key: 'jwt_token', value: newToken);
+      return pesan;
     } else {
-      throw Exception('Terjadi Kesalahan');
+      final pesan = json['pesan'];
+      return pesan;
     }
   }
 

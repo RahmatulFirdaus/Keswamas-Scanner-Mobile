@@ -2,6 +2,7 @@ import 'package:final_keswamas/model/keswamas_model.dart';
 import 'package:final_keswamas/pages/data_dropping_pasien_detail.dart';
 import 'package:final_keswamas/pages/tambah_data_dropping/tambah_data.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
 
 class DataDroppingPasien extends StatefulWidget {
@@ -16,11 +17,14 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
   List<DroppingPasien> searchResult = [];
   bool isLoading = true;
   final TextEditingController _searchController = TextEditingController();
+  final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
+  String? _token;
 
   @override
   void initState() {
     super.initState();
     fetchData();
+    loadToken();
   }
 
   @override
@@ -38,6 +42,13 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
     }
   }
 
+  void loadToken() async {
+    String? token = await _secureStorage.read(key: "jwt_token");
+    setState(() {
+      _token = token;
+    });
+  }
+
   Future<void> fetchData() async {
     setState(() {
       isLoading = true;
@@ -52,7 +63,7 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading data: ${e.toString()}')),
+          SnackBar(content: Text('Terjadi Kesalahan')),
         );
       }
     } finally {
@@ -217,44 +228,48 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: fetchData,
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : dataDroppingPasien.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.no_accounts,
-                            size: 64, color: Colors.grey[400]),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Tidak ada data',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey[600],
+      body: _token != null
+          ? RefreshIndicator(
+              onRefresh: fetchData,
+              child: isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : dataDroppingPasien.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.no_accounts,
+                                  size: 64, color: Colors.grey[400]),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Tidak ada data',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Container(
+                            margin: const EdgeInsets.all(20),
+                            child: Column(
+                              children: [
+                                _buildSearchField(),
+                                const SizedBox(height: 20),
+                                searchResult.isEmpty
+                                    ? _buildEmptyState()
+                                    : _buildListView(),
+                              ],
+                            ),
                           ),
                         ),
-                      ],
-                    ),
-                  )
-                : SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: Container(
-                      margin: const EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          _buildSearchField(),
-                          const SizedBox(height: 20),
-                          searchResult.isEmpty
-                              ? _buildEmptyState()
-                              : _buildListView(),
-                        ],
-                      ),
-                    ),
-                  ),
-      ),
+            )
+          : Center(
+              child: Text("Forbidden"),
+            ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         onPressed: () {

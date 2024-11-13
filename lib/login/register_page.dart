@@ -84,15 +84,33 @@ class _RegisterPageState extends State<RegisterPage> {
                             passwordController.text,
                             passwordConfirmController.text,
                             emailController.text);
-                        toastification.show(
-                          alignment: Alignment.topCenter,
-                          autoCloseDuration: const Duration(seconds: 5),
-                          style: ToastificationStyle.flat,
-                          type: ToastificationType.success,
-                          context: context,
-                          title: Text("$result"),
-                          description: Text("Field tidak boleh kosong"),
-                        );
+                        if (result == "Berhasil terdaftar") {
+                          toastification.show(
+                            alignment: Alignment.topCenter,
+                            autoCloseDuration: const Duration(seconds: 5),
+                            style: ToastificationStyle.flat,
+                            type: ToastificationType.success,
+                            icon: Icon(Icons.error_outline),
+                            context: context,
+                            title: Text("Daftar Akun Berhasil"),
+                            description: Text("${result}"),
+                          );
+                          Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (context) {
+                            return LoginPage();
+                          }));
+                        } else {
+                          toastification.show(
+                            alignment: Alignment.topCenter,
+                            autoCloseDuration: const Duration(seconds: 5),
+                            style: ToastificationStyle.flat,
+                            type: ToastificationType.error,
+                            icon: Icon(Icons.error_outline),
+                            context: context,
+                            title: Text("Daftar Akun Gagal"),
+                            description: Text("${result}"),
+                          );
+                        }
                       } catch (e) {
                         toastification.show(
                           alignment: Alignment.topCenter,

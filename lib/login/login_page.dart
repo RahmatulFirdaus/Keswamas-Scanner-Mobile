@@ -61,7 +61,18 @@ class _LoginPageState extends State<LoginPage> {
                       try {
                         String? result = await authService.login(
                             usernameController.text, passwordController.text);
+
                         if (result == null) {
+                          toastification.show(
+                            alignment: Alignment.topCenter,
+                            autoCloseDuration: const Duration(seconds: 5),
+                            style: ToastificationStyle.flat,
+                            type: ToastificationType.success,
+                            icon: Icon(Icons.error_outline),
+                            context: context,
+                            title: Text("Login Berhasil"),
+                            description: Text("Selamat Datang Di Keswamas App"),
+                          );
                           Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
                                   builder: (context) => const Dashboard()));
