@@ -1,6 +1,7 @@
 import 'package:final_keswamas/model/keswamas_model.dart';
 import 'package:final_keswamas/pages/data_dropping_pasien_detail.dart';
 import 'package:final_keswamas/pages/tambah_data_dropping/tambah_data.dart';
+import 'package:final_keswamas/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
@@ -18,6 +19,7 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
   bool isLoading = true;
   final TextEditingController _searchController = TextEditingController();
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
+  AuthService _authService = AuthService();
   String? _token;
 
   @override
@@ -65,6 +67,7 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Terjadi Kesalahan')),
         );
+        print(e);
       }
     } finally {
       if (mounted) {
@@ -229,43 +232,8 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
         ],
       ),
       body: _token != null
-          ? RefreshIndicator(
-              onRefresh: fetchData,
-              child: isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : dataDroppingPasien.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.no_accounts,
-                                  size: 64, color: Colors.grey[400]),
-                              const SizedBox(height: 16),
-                              Text(
-                                'Tidak ada data',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : SingleChildScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          child: Container(
-                            margin: const EdgeInsets.all(20),
-                            child: Column(
-                              children: [
-                                _buildSearchField(),
-                                const SizedBox(height: 20),
-                                searchResult.isEmpty
-                                    ? _buildEmptyState()
-                                    : _buildListView(),
-                              ],
-                            ),
-                          ),
-                        ),
+          ? Center(
+              child: Text("token ada"),
             )
           : Center(
               child: Text("Forbidden"),
