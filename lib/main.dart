@@ -19,6 +19,6 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           textTheme: GoogleFonts.comfortaaTextTheme(),
         ),
-        home: LoginPage());
+        home: const LoginPage());
   }
 }

@@ -105,7 +105,7 @@ class RegisterUser {
     });
     var json = jsonDecode(response.body);
     if (response.statusCode == 200) {
-      return null;
+      return json['pesan'];
     } else {
       return json['pesan'];
     }

@@ -84,33 +84,19 @@ class _RegisterPageState extends State<RegisterPage> {
                             passwordController.text,
                             passwordConfirmController.text,
                             emailController.text);
-                        if (result == null) {
-                          toastification.show(
-                            alignment: Alignment.topCenter,
-                            autoCloseDuration: Duration(seconds: 5),
-                            style: ToastificationStyle.flat,
-                            type: ToastificationType.error,
-                            icon: Icon(Icons.error_outline),
-                            context: context,
-                            title: Text("${result}"),
-                            description: Text("Akun Berhasil Didaftarkan"),
-                          );
-                        } else {
-                          toastification.show(
-                            alignment: Alignment.topCenter,
-                            autoCloseDuration: Duration(seconds: 5),
-                            style: ToastificationStyle.flat,
-                            type: ToastificationType.error,
-                            icon: Icon(Icons.error_outline),
-                            context: context,
-                            title: Text("Terjadi Kesalahan"),
-                            description: Text("${result}"),
-                          );
-                        }
+                        toastification.show(
+                          alignment: Alignment.topCenter,
+                          autoCloseDuration: const Duration(seconds: 5),
+                          style: ToastificationStyle.flat,
+                          type: ToastificationType.success,
+                          context: context,
+                          title: Text("$result"),
+                          description: Text("Field tidak boleh kosong"),
+                        );
                       } catch (e) {
                         toastification.show(
                           alignment: Alignment.topCenter,
-                          autoCloseDuration: Duration(seconds: 5),
+                          autoCloseDuration: const Duration(seconds: 5),
                           style: ToastificationStyle.flat,
                           type: ToastificationType.error,
                           icon: Icon(Icons.error_outline),
@@ -122,7 +108,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     } else {
                       toastification.show(
                         alignment: Alignment.topCenter,
-                        autoCloseDuration: Duration(seconds: 5),
+                        autoCloseDuration: const Duration(seconds: 5),
                         style: ToastificationStyle.flat,
                         type: ToastificationType.error,
                         icon: Icon(Icons.error_outline),
@@ -143,7 +129,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   TextButton(
                       onPressed: () {
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (context) => LoginPage()));
+                            builder: (context) => const LoginPage()));
                       },
                       child: Text("Login")),
                 ],

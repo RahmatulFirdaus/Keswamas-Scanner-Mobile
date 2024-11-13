@@ -72,7 +72,7 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
         searchResult = dataDroppingPasien
             .where((data) =>
                 data.tema_kegiatan
-                    ?.toLowerCase()
+                    .toLowerCase()
                     .contains(query.toLowerCase()) ??
                 false)
             .toList();
@@ -162,7 +162,7 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            "${formatDate(data.tanggal_kegiatan)}",
+                            formatDate(data.tanggal_kegiatan),
                             style: const TextStyle(
                               fontSize: 14,
                               color: Colors.black54,

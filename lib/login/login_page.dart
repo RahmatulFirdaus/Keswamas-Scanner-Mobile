@@ -64,23 +64,23 @@ class _LoginPageState extends State<LoginPage> {
                         if (result == null) {
                           Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
-                                  builder: (context) => Dashboard()));
+                                  builder: (context) => const Dashboard()));
                         } else {
                           toastification.show(
                             alignment: Alignment.topCenter,
-                            autoCloseDuration: Duration(seconds: 5),
+                            autoCloseDuration: const Duration(seconds: 5),
                             style: ToastificationStyle.flat,
                             type: ToastificationType.error,
                             icon: Icon(Icons.error_outline),
                             context: context,
                             title: Text("Login Gagal"),
-                            description: Text("${result}"),
+                            description: Text(result),
                           );
                         }
                       } catch (e) {
                         toastification.show(
                           alignment: Alignment.topCenter,
-                          autoCloseDuration: Duration(seconds: 5),
+                          autoCloseDuration: const Duration(seconds: 5),
                           style: ToastificationStyle.flat,
                           type: ToastificationType.error,
                           icon: Icon(Icons.error_outline),
@@ -92,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                     } else {
                       toastification.show(
                         alignment: Alignment.topCenter,
-                        autoCloseDuration: Duration(seconds: 5),
+                        autoCloseDuration: const Duration(seconds: 5),
                         style: ToastificationStyle.flat,
                         type: ToastificationType.error,
                         icon: Icon(Icons.error_outline),
@@ -114,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                   TextButton(
                       onPressed: () {
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (context) => RegisterPage()));
+                            builder: (context) => const RegisterPage()));
                       },
                       child: Text("Register")),
                 ],
