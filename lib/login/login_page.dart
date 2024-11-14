@@ -68,14 +68,16 @@ class _LoginPageState extends State<LoginPage> {
                             autoCloseDuration: const Duration(seconds: 5),
                             style: ToastificationStyle.flat,
                             type: ToastificationType.success,
-                            icon: Icon(Icons.error_outline),
+                            icon: Icon(Icons.check),
                             context: context,
                             title: Text("Login Berhasil"),
                             description: Text("Selamat Datang Di Keswamas App"),
                           );
                           Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
-                                  builder: (context) => const Dashboard()));
+                                  builder: (context) => Dashboard(
+                                      username: usernameController.text,
+                                      password: passwordController.text)));
                         } else {
                           toastification.show(
                             alignment: Alignment.topCenter,

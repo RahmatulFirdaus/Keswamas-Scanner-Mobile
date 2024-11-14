@@ -2,7 +2,8 @@ import 'package:final_keswamas/pages/data_dropping_pasien.dart';
 import 'package:flutter/material.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+  String username, password;
+  Dashboard({super.key, required this.username, required this.password});
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -53,7 +54,10 @@ class _DashboardState extends State<Dashboard> {
               subtitle: 'Kelola data pasien dropping',
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const DataDroppingPasien(),
+                  builder: (context) => DataDroppingPasien(
+                    username: widget.username,
+                    password: widget.password,
+                  ),
                 ));
               },
             ),

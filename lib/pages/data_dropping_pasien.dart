@@ -5,9 +5,12 @@ import 'package:final_keswamas/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
+import 'package:toastification/toastification.dart';
 
 class DataDroppingPasien extends StatefulWidget {
-  const DataDroppingPasien({super.key});
+  String username, password;
+  DataDroppingPasien(
+      {super.key, required this.username, required this.password});
 
   @override
   State<DataDroppingPasien> createState() => _DataDroppingPasienState();
@@ -16,16 +19,14 @@ class DataDroppingPasien extends StatefulWidget {
 class _DataDroppingPasienState extends State<DataDroppingPasien> {
   List<DroppingPasien> dataDroppingPasien = [];
   List<DroppingPasien> searchResult = [];
-  bool isLoading = true;
   final TextEditingController _searchController = TextEditingController();
-  final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
-  AuthService _authService = AuthService();
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   String? _token;
+  AuthService authService = AuthService();
 
   @override
   void initState() {
     super.initState();
-    fetchData();
     loadToken();
   }
 
@@ -49,31 +50,47 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
     setState(() {
       _token = token;
     });
+    if (_token != null) {
+      fetchData();
+    } else {
+      print("Token Tidak Ditemukan");
+      refreshToken(); // Try refreshing token if not found
+    }
+  }
+
+  void refreshToken() async {
+    String? token = await _secureStorage.read(key: "refresh_token");
+    if (token != null) {
+      try {
+        final response = await RefreshToken.refreshJwtToken(token);
+        if (response == "Berhasil") {
+          loadToken();
+        } else {
+          // Handle failed refresh - maybe logout user
+          print("Failed to refresh token: $response");
+          await authService.logout();
+          // You may want to navigate to login screen here
+        }
+      } catch (e) {
+        print("Error refreshing token: $e");
+        await authService.logout();
+        // You may want to navigate to login screen here
+      }
+    }
   }
 
   Future<void> fetchData() async {
-    setState(() {
-      isLoading = true;
-    });
-
     try {
-      final dataDrop = await DroppingPasien.getDroppingPasien();
+      final dataDrop = await DroppingPasien.getDroppingPasien(_token!);
       setState(() {
         dataDroppingPasien = dataDrop;
-        searchResult = dataDrop; // Initialize search results with all data
+        searchResult = dataDrop;
       });
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Terjadi Kesalahan')),
-        );
-        print(e);
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
+      print("Error fetching data: $e");
+      // If error is due to invalid token, try refreshing
+      if (e.toString().contains('401') || e.toString().contains('403')) {
+        refreshToken();
       }
     }
   }
@@ -232,11 +249,27 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
         ],
       ),
       body: _token != null
-          ? Center(
-              child: Text("token ada"),
-            )
-          : Center(
-              child: Text("Forbidden"),
+          ? dataDroppingPasien.isEmpty
+              ? const Center(
+                  child: Text("Data Tidak ada"),
+                )
+              : SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Container(
+                    margin: const EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+                        _buildSearchField(),
+                        const SizedBox(height: 20),
+                        searchResult.isEmpty
+                            ? _buildEmptyState()
+                            : _buildListView(),
+                      ],
+                    ),
+                  ),
+                )
+          : const Center(
+              child: Text("Akses Tidak Ditemukan"),
             ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,

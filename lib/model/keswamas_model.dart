@@ -13,9 +13,15 @@ class DroppingPasien {
       required this.tanggal_kegiatan,
       required this.tanggal_pembuatan});
 
-  static Future<List<DroppingPasien>> getDroppingPasien() async {
+  static Future<List<DroppingPasien>> getDroppingPasien(String token) async {
     var url = Uri.parse('http://10.0.10.58:3000/api/getDropping');
-    var response = await http.get(url);
+    var response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
     var json = jsonDecode(response.body);
     var dataList = json['data'] as List;
     return dataList.map((e) {
