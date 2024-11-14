@@ -50,11 +50,11 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
     setState(() {
       _token = token;
     });
-    if (_token != null) {
+    try {
       fetchData();
-    } else {
-      print("Token Tidak Ditemukan");
-      refreshToken(); // Try refreshing token if not found
+    } catch (e) {
+      print("error: $e");
+      refreshToken();
     }
   }
 
@@ -63,6 +63,7 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
     if (token != null) {
       try {
         final response = await RefreshToken.refreshJwtToken(token);
+        print("token: $token");
         if (response == "Berhasil") {
           loadToken();
         } else {
@@ -80,19 +81,11 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
   }
 
   Future<void> fetchData() async {
-    try {
-      final dataDrop = await DroppingPasien.getDroppingPasien(_token!);
-      setState(() {
-        dataDroppingPasien = dataDrop;
-        searchResult = dataDrop;
-      });
-    } catch (e) {
-      print("Error fetching data: $e");
-      // If error is due to invalid token, try refreshing
-      if (e.toString().contains('401') || e.toString().contains('403')) {
-        refreshToken();
-      }
-    }
+    final dataDrop = await DroppingPasien.getDroppingPasien(_token!);
+    setState(() {
+      dataDroppingPasien = dataDrop;
+      searchResult = dataDrop;
+    });
   }
 
   void searchData(String query) {
@@ -249,11 +242,8 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
         ],
       ),
       body: _token != null
-          ? dataDroppingPasien.isEmpty
-              ? const Center(
-                  child: Text("Data Tidak ada"),
-                )
-              : SingleChildScrollView(
+          ? dataDroppingPasien.isNotEmpty
+              ? SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   child: Container(
                     margin: const EdgeInsets.all(20),
@@ -267,6 +257,9 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
                       ],
                     ),
                   ),
+                )
+              : const Center(
+                  child: Text("Kamu tidak memiliki akses data ini"),
                 )
           : const Center(
               child: Text("Akses Tidak Ditemukan"),

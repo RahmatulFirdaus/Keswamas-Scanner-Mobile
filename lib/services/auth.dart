@@ -47,20 +47,26 @@ class RefreshToken {
     }
 
     var url = Uri.parse('http://10.0.10.58:3000/api/refreshToken');
-    var response = await http.get(url, headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token'
-    });
-    final json = jsonDecode(response.body);
-    if (response.statusCode == 200) {
-      var newToken = json['data'];
-      final pesan = json['pesan'];
+    var response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+      },
+      body: jsonEncode({'refresh_token': refreshToken}),
+    );
 
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      var newToken = json['data']['token'];
+      var newRefreshToken = json['data']['refresh_token'];
       await storage.write(key: 'jwt_token', value: newToken);
-      return pesan;
+      await storage.write(key: 'refresh_token', value: newRefreshToken);
+
+      return "Berhasil";
     } else {
-      final pesan = json['pesan'];
-      return pesan;
+      final json = jsonDecode(response.body);
+      return json['pesan'] ?? 'Failed to refresh token';
     }
   }
 }
