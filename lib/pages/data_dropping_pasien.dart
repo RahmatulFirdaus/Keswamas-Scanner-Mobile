@@ -222,14 +222,10 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: const Text('Data Dropping Pasien'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: fetchData,
-          ),
-        ],
       ),
       body: _token != null
           ? dataDroppingPasien.isNotEmpty
