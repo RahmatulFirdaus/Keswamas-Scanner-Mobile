@@ -5,11 +5,10 @@ import 'package:final_keswamas/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
-import 'package:toastification/toastification.dart';
 
 class DataDroppingPasien extends StatefulWidget {
-  String username, password;
-  DataDroppingPasien(
+  final String username, password;
+  const DataDroppingPasien(
       {super.key, required this.username, required this.password});
 
   @override
@@ -67,15 +66,12 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
         if (response == "Berhasil") {
           loadToken();
         } else {
-          // Handle failed refresh - maybe logout user
           print("Failed to refresh token: $response");
           await authService.logout();
-          // You may want to navigate to login screen here
         }
       } catch (e) {
         print("Error refreshing token: $e");
         await authService.logout();
-        // You may want to navigate to login screen here
       }
     }
   }
@@ -95,10 +91,7 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
       } else {
         searchResult = dataDroppingPasien
             .where((data) =>
-                data.tema_kegiatan
-                    .toLowerCase()
-                    .contains(query.toLowerCase()) ??
-                false)
+                data.temaKegiatan.toLowerCase().contains(query.toLowerCase()))
             .toList();
       }
     });
@@ -177,7 +170,7 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            data.tema_kegiatan ?? 'No Title',
+                            data.temaKegiatan,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -186,7 +179,7 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            formatDate(data.tanggal_kegiatan),
+                            formatDate(data.tanggalKegiatan),
                             style: const TextStyle(
                               fontSize: 14,
                               color: Colors.black54,

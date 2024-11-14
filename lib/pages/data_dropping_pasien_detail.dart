@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'package:final_keswamas/model/keswamas_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:archive/archive.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -19,17 +18,17 @@ class DataDroppingPasienDetail extends StatefulWidget {
 class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
   DroppingPasienDetail droppingPasienDetail = DroppingPasienDetail(
     id: "",
-    tema_kegiatan: "",
+    temaKegiatan: "",
     gambar: "",
-    tanggal_kegiatan: "",
-    tanggal_pembuatan: "",
+    tanggalKegiatan: "",
+    tanggalPembuatan: "",
   );
 
   GetFile getFile = GetFile(gambar: '');
   List<GetFileEach> getFileEach = [];
   bool isLoading = true;
   bool isImageExpanded = false;
-  List<String> _extractedFiles = [];
+  List<String> extractedFiles = [];
 
   @override
   void initState() {
@@ -59,7 +58,7 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
     }
   }
 
-  void _toggleImageSize() {
+  void toggleImageSize() {
     setState(() {
       isImageExpanded = !isImageExpanded;
     });
@@ -67,26 +66,20 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
 
   Future<void> downloadAndExtractZip(String url) async {
     try {
-      // Step 1: Download the ZIP file from the URL
       final response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
-        // Step 2: Get the bytes from the response
         List<int> bytes = response.bodyBytes;
 
-        // Step 3: Decode the ZIP file
         Archive archive = ZipDecoder().decodeBytes(bytes);
 
-        // Step 4: Get the app's document directory to store extracted files
         Directory tempDir = await getTemporaryDirectory();
         String extractPath = '${tempDir.path}/extracted_files';
         await Directory(extractPath).create(recursive: true);
 
-        // Step 5: Extract the files and store their paths
         List<String> extractedFilePaths = [];
         for (var file in archive) {
           if (file.isFile) {
-            // Write the file to disk
             String filePath = '$extractPath/${file.name}';
             File outputFile = File(filePath);
             await outputFile.writeAsBytes(file.content);
@@ -95,9 +88,8 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
           }
         }
 
-        // Step 6: Update the state with the extracted files
         setState(() {
-          _extractedFiles = extractedFilePaths;
+          extractedFiles = extractedFilePaths;
         });
       } else {
         throw Exception('Failed to download the file');
@@ -107,9 +99,9 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
     }
   }
 
-  Widget _buildImageViewer() {
+  Widget buildImageViewer() {
     return GestureDetector(
-      onTap: _toggleImageSize,
+      onTap: toggleImageSize,
       child: Card(
         elevation: 4,
         margin: const EdgeInsets.symmetric(vertical: 16),
@@ -129,7 +121,6 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
                     ),
                   ),
                   TextButton.icon(
-                    // onPressed: () => launchUrl(Uri.parse(getFile.gambar)),
                     onPressed: () => downloadAndExtractZip(getFile.gambar),
                     icon: const Icon(Icons.open_in_new),
                     label: const Text('Display Image'),
@@ -152,11 +143,10 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
                   separatorBuilder: (context, index) => const SizedBox(
                     height: 16,
                   ),
-                  itemCount: _extractedFiles.length,
+                  itemCount: extractedFiles.length,
                   itemBuilder: (context, index) {
-                    // Display images from extracted files
                     return Image.file(
-                      File(_extractedFiles[index]),
+                      File(extractedFiles[index]),
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) =>
                           const Center(
@@ -187,7 +177,7 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
     );
   }
 
-  Widget _buildInfoCard(String title, String value) {
+  Widget buildInfoCard(String title, String value) {
     return Card(
       elevation: 2,
       margin: const EdgeInsets.only(bottom: 16),
@@ -266,7 +256,7 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            droppingPasienDetail.tema_kegiatan,
+                            droppingPasienDetail.temaKegiatan,
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 24,
@@ -281,7 +271,7 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildImageViewer(),
+                          buildImageViewer(),
                           const SizedBox(height: 16),
                           const Text(
                             'Informasi Detail',
@@ -291,13 +281,13 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          _buildInfoCard(
+                          buildInfoCard(
                             'Tanggal Kegiatan',
-                            formatDate(droppingPasienDetail.tanggal_kegiatan),
+                            formatDate(droppingPasienDetail.tanggalKegiatan),
                           ),
-                          _buildInfoCard(
+                          buildInfoCard(
                             'Tanggal Pembuatan',
-                            formatDate(droppingPasienDetail.tanggal_pembuatan),
+                            formatDate(droppingPasienDetail.tanggalPembuatan),
                           ),
                           const SizedBox(height: 20),
                         ],

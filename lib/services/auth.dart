@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -18,14 +17,11 @@ class AuthService {
 
       await storage.write(key: 'jwt_token', value: token);
       await storage.write(key: 'refresh_token', value: refreshToken);
-      print("${token}");
-      print("${refreshToken}");
 
       return null;
     } else {
       final json = jsonDecode(response.body);
       final pesan = json['pesan'];
-      print(pesan);
       return pesan;
     }
   }
@@ -37,7 +33,7 @@ class AuthService {
 }
 
 class RefreshToken {
-  static final storage = const FlutterSecureStorage();
+  static const storage = FlutterSecureStorage();
 
   static Future<String> refreshJwtToken(String token) async {
     final refreshToken = await storage.read(key: 'refresh_token');
