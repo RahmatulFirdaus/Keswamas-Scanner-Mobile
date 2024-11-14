@@ -52,7 +52,6 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
     try {
       fetchData();
     } catch (e) {
-      print("error: $e");
       refreshToken();
     }
   }
@@ -62,15 +61,13 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
     if (token != null) {
       try {
         final response = await RefreshToken.refreshJwtToken(token);
-        print("token: $token");
+
         if (response == "Berhasil") {
           loadToken();
         } else {
-          print("Failed to refresh token: $response");
           await authService.logout();
         }
       } catch (e) {
-        print("Error refreshing token: $e");
         await authService.logout();
       }
     }
