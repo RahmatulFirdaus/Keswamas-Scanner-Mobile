@@ -248,9 +248,9 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
                   autoCloseDuration: const Duration(seconds: 5),
                   style: ToastificationStyle.flat,
                   type: ToastificationType.error,
-                  icon: Icon(Icons.error_outline),
+                  icon: const Icon(Icons.error_outline),
                   context: context,
-                  title: Text("Kamu Tidak Memiliki Akses"),
+                  title: const Text("Kamu Tidak Memiliki Akses"),
                 );
         },
         child: const Icon(

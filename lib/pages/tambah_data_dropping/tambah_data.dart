@@ -289,8 +289,8 @@ class _TambahDataDroppingPasienState extends State<TambahDataDroppingPasien> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
         ),
-        label: Row(
-          children: const [
+        label: const Row(
+          children: [
             Icon(
               Icons.add_circle_outline,
               color: Colors.white,
@@ -404,7 +404,7 @@ class _TambahDataDroppingPasienState extends State<TambahDataDroppingPasien> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
                 content:
                     Text('Gagal menambahkan data')), // Menampilkan pesan error
           );

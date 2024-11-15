@@ -21,39 +21,39 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
         body: SafeArea(
       child: Container(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
+              const Text(
                 "Login",
                 style: TextStyle(fontSize: 30),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               TextField(
                 controller: usernameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: "Username",
                     prefixIcon: Icon(Icons.email_outlined)),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               TextField(
                 controller: passwordController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: "Password",
                     prefixIcon: Icon(Icons.lock_outline)),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
               Container(
                 height: 60,
-                margin: EdgeInsets.symmetric(horizontal: 20),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
                 child: OutlinedButton(
                   onPressed: () async {
                     if (usernameController.text.isNotEmpty &&
@@ -68,10 +68,11 @@ class _LoginPageState extends State<LoginPage> {
                             autoCloseDuration: const Duration(seconds: 5),
                             style: ToastificationStyle.flat,
                             type: ToastificationType.success,
-                            icon: Icon(Icons.check),
+                            icon: const Icon(Icons.check),
                             context: context,
-                            title: Text("Login Berhasil"),
-                            description: Text("Selamat Datang Di Keswamas App"),
+                            title: const Text("Login Berhasil"),
+                            description:
+                                const Text("Selamat Datang Di Keswamas App"),
                           );
                           Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
@@ -84,9 +85,9 @@ class _LoginPageState extends State<LoginPage> {
                             autoCloseDuration: const Duration(seconds: 5),
                             style: ToastificationStyle.flat,
                             type: ToastificationType.error,
-                            icon: Icon(Icons.error_outline),
+                            icon: const Icon(Icons.error_outline),
                             context: context,
-                            title: Text("Login Gagal"),
+                            title: const Text("Login Gagal"),
                             description: Text(result),
                           );
                         }
@@ -96,10 +97,10 @@ class _LoginPageState extends State<LoginPage> {
                           autoCloseDuration: const Duration(seconds: 5),
                           style: ToastificationStyle.flat,
                           type: ToastificationType.error,
-                          icon: Icon(Icons.error_outline),
+                          icon: const Icon(Icons.error_outline),
                           context: context,
-                          title: Text("Login Gagal"),
-                          description: Text("Terjadi Kesalahan"),
+                          title: const Text("Login Gagal"),
+                          description: const Text("Terjadi Kesalahan"),
                         );
                       }
                     } else {
@@ -108,28 +109,28 @@ class _LoginPageState extends State<LoginPage> {
                         autoCloseDuration: const Duration(seconds: 5),
                         style: ToastificationStyle.flat,
                         type: ToastificationType.error,
-                        icon: Icon(Icons.error_outline),
+                        icon: const Icon(Icons.error_outline),
                         context: context,
-                        title: Text("Login Gagal"),
-                        description:
-                            Text("Username dan Password tidak boleh kosong"),
+                        title: const Text("Login Gagal"),
+                        description: const Text(
+                            "Username dan Password tidak boleh kosong"),
                       );
                     }
                   },
+                  style: const ButtonStyle(),
                   child: Text("Login"),
-                  style: ButtonStyle(),
                 ),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Belum punya akun? "),
+                  const Text("Belum punya akun? "),
                   TextButton(
                       onPressed: () {
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
                             builder: (context) => const RegisterPage()));
                       },
-                      child: Text("Register")),
+                      child: const Text("Register")),
                 ],
               )
             ]),
