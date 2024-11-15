@@ -5,6 +5,7 @@ import 'package:final_keswamas/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
+import 'package:toastification/toastification.dart';
 
 class DataDroppingPasien extends StatefulWidget {
   final String username, password;
@@ -49,7 +50,11 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
     setState(() {
       _token = token;
     });
-    fetchData();
+    try {
+      fetchData();
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> fetchData() async {
@@ -232,13 +237,21 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         onPressed: () {
-          Navigator.of(context)
-              .push(
-                MaterialPageRoute(
-                  builder: (context) => const TambahDataDroppingPasien(),
-                ),
-              )
-              .then((_) => fetchData());
+          dataDroppingPasien.isNotEmpty
+              ? Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const TambahDataDroppingPasien(),
+                  ),
+                )
+              : toastification.show(
+                  alignment: Alignment.topCenter,
+                  autoCloseDuration: const Duration(seconds: 5),
+                  style: ToastificationStyle.flat,
+                  type: ToastificationType.error,
+                  icon: Icon(Icons.error_outline),
+                  context: context,
+                  title: Text("Kamu Tidak Memiliki Akses"),
+                );
         },
         child: const Icon(
           Icons.add,
