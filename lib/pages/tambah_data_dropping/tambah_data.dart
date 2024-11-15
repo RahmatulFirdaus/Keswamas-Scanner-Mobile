@@ -405,8 +405,8 @@ class _TambahDataDroppingPasienState extends State<TambahDataDroppingPasien> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text(
-                    'Gagal menambahkan data: ${response.reasonPhrase}')), // Menampilkan pesan error
+                content:
+                    Text('Gagal menambahkan data')), // Menampilkan pesan error
           );
         }
       }
