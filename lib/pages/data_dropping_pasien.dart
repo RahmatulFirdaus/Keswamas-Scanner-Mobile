@@ -49,28 +49,7 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
     setState(() {
       _token = token;
     });
-    try {
-      fetchData();
-    } catch (e) {
-      refreshToken();
-    }
-  }
-
-  void refreshToken() async {
-    String? token = await _secureStorage.read(key: "refresh_token");
-    if (token != null) {
-      try {
-        final response = await RefreshToken.refreshJwtToken(token);
-
-        if (response == "Berhasil") {
-          loadToken();
-        } else {
-          await authService.logout();
-        }
-      } catch (e) {
-        await authService.logout();
-      }
-    }
+    fetchData();
   }
 
   Future<void> fetchData() async {
