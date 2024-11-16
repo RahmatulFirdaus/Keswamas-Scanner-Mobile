@@ -1,10 +1,11 @@
-import 'dart:convert'; // Add this import for JSON encoding
+import 'dart:convert';
 import 'dart:ui';
 import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:toastification/toastification.dart';
 
 class TambahDataDroppingPasien extends StatefulWidget {
   const TambahDataDroppingPasien({super.key});
@@ -16,7 +17,7 @@ class TambahDataDroppingPasien extends StatefulWidget {
 
 class _TambahDataDroppingPasienState extends State<TambahDataDroppingPasien> {
   List<String> _pictures = [];
-  List<File> _files = []; // Declare _files to store File objects
+  List<File> _files = [];
   final tanggalController = TextEditingController();
   final temaController = TextEditingController();
   DateTime selectedDate = DateTime.now();
@@ -276,10 +277,15 @@ class _TambahDataDroppingPasienState extends State<TambahDataDroppingPasien> {
           if (tanggalController.text.isEmpty ||
               _files.isEmpty ||
               temaController.text.isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Harap Inputkan Semua Data'),
-              ),
+            toastification.show(
+              alignment: Alignment.topCenter,
+              autoCloseDuration: const Duration(seconds: 5),
+              style: ToastificationStyle.flat,
+              type: ToastificationType.error,
+              icon: const Icon(Icons.error_outline),
+              context: context,
+              title: const Text("Gagal Menambahkan Data"),
+              description: const Text("Harap Inputkan Semua Data"),
             );
           } else {
             tambahData();
@@ -310,114 +316,87 @@ class _TambahDataDroppingPasienState extends State<TambahDataDroppingPasien> {
     );
   }
 
-  // Fungsi untuk memindai dokumen menggunakan plugin CunningDocumentScanner
   void scanDocument() async {
-    List<String> pictures; // Daftar untuk menyimpan path gambar hasil scan
+    List<String> pictures;
     try {
-      // Memanggil plugin CunningDocumentScanner untuk mengambil gambar, dengan pengaturan:
-      // - noOfPages: 1 (jumlah halaman yang ingin discan)
-      // - isGalleryImportAllowed: true (mengizinkan impor dari galeri)
       pictures = await CunningDocumentScanner.getPictures(
             noOfPages: 100,
             isGalleryImportAllowed: true,
           ) ??
           [];
 
-      // Jika widget ini tidak lagi terpasang di layar, hentikan proses
       if (!mounted) return;
 
-      // Update state dengan hasil gambar
       setState(() {
-        _pictures = pictures; // Menyimpan path gambar dalam state
-        _files = pictures
-            .map((path) => File(path))
-            .toList(); // Mengonversi path menjadi daftar objek File
+        _pictures = pictures;
+        _files = pictures.map((path) => File(path)).toList();
       });
     } catch (exception) {
-      // Jika terjadi kesalahan, periksa apakah widget masih terpasang, lalu cetak error
       if (!mounted) return;
-      print("exception: $exception"); // Mencetak pesan error
     }
   }
 
-// Fungsi untuk mengirim data ke server
   Future<void> tambahData() async {
-    // URL API untuk upload file
     String url = 'http://10.0.10.58:3000/api/uploadFile';
     var request = http.MultipartRequest('POST', Uri.parse(url));
 
-    // Menambahkan field teks ke dalam request
-    request.fields['tema_kegiatan'] = temaController.text; // Tema kegiatan
-    request.fields['tanggal_kegiatan'] =
-        tanggalController.text; // Tanggal kegiatan
-    request.fields['tanggal_pembuatan'] = DateTime.now()
-        .toString(); // Tanggal pembuatan otomatis (tanggal saat ini)
+    request.fields['tema_kegiatan'] = temaController.text;
+    request.fields['tanggal_kegiatan'] = tanggalController.text;
+    request.fields['tanggal_pembuatan'] = DateTime.now().toString();
 
-    // Menambahkan file ke dalam request
     for (File file in _files) {
-      var stream = http.ByteStream(
-          file.openRead().cast()); // Membaca file sebagai stream
-      var length = await file.length(); // Mendapatkan ukuran file
+      var stream = http.ByteStream(file.openRead().cast());
+      var length = await file.length();
       request.files.add(http.MultipartFile(
-        'file', // Nama field untuk file pada server
-        stream, // Stream data file
-        length, // Panjang file dalam byte
-        filename: file.path.split('/').last, // Nama file
+        'file',
+        stream,
+        length,
+        filename: file.path.split('/').last,
       ));
     }
 
     try {
-      // Mengirim request ke server
       var response = await request.send();
-
       if (response.statusCode == 200) {
-        // Jika respons berhasil (status 200)
-        var responseData = await http.Response.fromStream(
-            response); // Membaca data respons dari stream
-        var jsonResponse =
-            jsonDecode(responseData.body); // Mengonversi respons menjadi JSON
-
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text(
-                    'Data berhasil ditambahkan')), // Menampilkan pesan sukses
+          toastification.show(
+            alignment: Alignment.topCenter,
+            autoCloseDuration: const Duration(seconds: 5),
+            style: ToastificationStyle.flat,
+            type: ToastificationType.success,
+            icon: const Icon(Icons.check),
+            context: context,
+            title: const Text("Berhasil"),
+            description: const Text("Data berhasil ditambahkan"),
           );
         }
-        print(
-            'Data added successfully: $jsonResponse'); // Mencetak data hasil respons
-
-        clearForm(); // Mengosongkan form setelah pengiriman sukses
-        Navigator.pop(context); // Kembali ke halaman sebelumnya
+        clearForm();
+        Navigator.pop(context);
       } else {
-        // Jika terjadi kesalahan saat menambahkan data
-        var responseData = await http.Response.fromStream(response);
-        print(
-            'Failed to add data: ${response.statusCode}'); // Mencetak status kode error
-        print(
-            'Response body: ${responseData.body}'); // Mencetak data error dari server
-        print('Tema: ${temaController.text}'); // Debug: mencetak nilai tema
-        print(
-            'Tanggal: ${tanggalController.text}'); // Debug: mencetak nilai tanggal kegiatan
-        print(
-            'Tanggal Pembuatan: ${DateTime.now()}'); // Debug: mencetak nilai tanggal pembuatan
-
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content:
-                    Text('Gagal menambahkan data')), // Menampilkan pesan error
+          toastification.show(
+            alignment: Alignment.topCenter,
+            autoCloseDuration: const Duration(seconds: 5),
+            style: ToastificationStyle.flat,
+            type: ToastificationType.error,
+            icon: const Icon(Icons.error_outline),
+            context: context,
+            title: const Text("Gagal"),
+            description: const Text("Gagal menambahkan data"),
           );
         }
       }
     } catch (e) {
-      // Penanganan kesalahan saat mengirim data
-      print('Exception: $e'); // Mencetak pesan error
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text(
-                  'Terjadi kesalahan saat mengirim data')), // Menampilkan pesan error
+        toastification.show(
+          alignment: Alignment.topCenter,
+          autoCloseDuration: const Duration(seconds: 5),
+          style: ToastificationStyle.flat,
+          type: ToastificationType.error,
+          icon: const Icon(Icons.error_outline),
+          context: context,
+          title: const Text("Error"),
+          description: const Text("Terjadi kesalahan saat mengirim data"),
         );
       }
     }

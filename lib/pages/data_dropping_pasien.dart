@@ -23,6 +23,7 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   String? _token;
   AuthService authService = AuthService();
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -51,9 +52,13 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
       _token = token;
     });
     try {
-      fetchData();
+      await fetchData();
     } catch (e) {
       print(e);
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -114,7 +119,9 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
         return Padding(
           padding: const EdgeInsets.only(bottom: 12.0),
           child: Card(
+            color: Colors.white,
             elevation: 2,
+            shadowColor: Colors.black,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
             ),
@@ -211,29 +218,31 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
         backgroundColor: Colors.white,
         title: const Text('Data Dropping Pasien'),
       ),
-      body: _token != null
-          ? dataDroppingPasien.isNotEmpty
-              ? SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Container(
-                    margin: const EdgeInsets.all(20),
-                    child: Column(
-                      children: [
-                        _buildSearchField(),
-                        const SizedBox(height: 20),
-                        searchResult.isEmpty
-                            ? _buildEmptyState()
-                            : _buildListView(),
-                      ],
-                    ),
-                  ),
-                )
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _token != null
+              ? dataDroppingPasien.isNotEmpty
+                  ? SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Container(
+                        margin: const EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            _buildSearchField(),
+                            const SizedBox(height: 20),
+                            searchResult.isEmpty
+                                ? _buildEmptyState()
+                                : _buildListView(),
+                          ],
+                        ),
+                      ),
+                    )
+                  : const Center(
+                      child: Text("Kamu tidak memiliki akses data ini"),
+                    )
               : const Center(
-                  child: Text("Kamu tidak memiliki akses data ini"),
-                )
-          : const Center(
-              child: Text("Akses Tidak Ditemukan"),
-            ),
+                  child: Text("Akses Tidak Ditemukan"),
+                ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         onPressed: () {
