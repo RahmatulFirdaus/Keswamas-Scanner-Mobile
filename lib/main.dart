@@ -1,4 +1,5 @@
 import 'package:final_keswamas/login/login_page.dart';
+import 'package:final_keswamas/splash_screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -18,6 +19,6 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           textTheme: GoogleFonts.comfortaaTextTheme(),
         ),
-        home: const LoginPage());
+        home: const SplashScreen());
   }
 }
