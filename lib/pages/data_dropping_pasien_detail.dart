@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:archive/archive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DataDroppingPasienDetail extends StatefulWidget {
   final String id;
@@ -281,13 +282,20 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          buildInfoCard(
-                            'Tanggal Kegiatan',
-                            formatDate(droppingPasienDetail.tanggalKegiatan),
-                          ),
-                          buildInfoCard(
-                            'Tanggal Pembuatan',
-                            formatDate(droppingPasienDetail.tanggalPembuatan),
+                          Row(
+                            children: [
+                              buildInfoCard(
+                                'Tanggal Kegiatan',
+                                formatDate(
+                                    droppingPasienDetail.tanggalKegiatan),
+                              ),
+                              Spacer(),
+                              buildInfoCard(
+                                'Tanggal Pembuatan',
+                                formatDate(
+                                    droppingPasienDetail.tanggalPembuatan),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 20),
                         ],
@@ -297,6 +305,14 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
                 ),
               ),
             ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.black,
+        onPressed: () {
+          String url = getFile.gambar;
+          launchUrl(Uri.parse(url));
+        },
+        child: const Icon(Icons.download, color: Colors.white),
+      ),
     );
   }
 }
