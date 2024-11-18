@@ -190,7 +190,7 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
             Text(
               title,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 13,
                 color: Colors.grey[600],
                 fontWeight: FontWeight.w500,
               ),
@@ -199,7 +199,7 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
             Text(
               value,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 15,
                 fontWeight: FontWeight.w600,
               ),
             ),
