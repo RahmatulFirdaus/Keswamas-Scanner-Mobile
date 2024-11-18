@@ -285,8 +285,7 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          Column(
                             children: [
                               buildInfoCard(
                                 'Tanggal Kegiatan',
