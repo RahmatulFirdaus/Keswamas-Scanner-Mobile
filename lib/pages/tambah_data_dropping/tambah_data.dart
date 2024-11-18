@@ -337,7 +337,7 @@ class _TambahDataDroppingPasienState extends State<TambahDataDroppingPasien> {
   }
 
   Future<void> tambahData() async {
-    String url = 'http://192.168.1.8:3000/api/uploadFile';
+    String url = 'http://192.168.3.9:5000/api/uploadFile';
     var request = http.MultipartRequest('POST', Uri.parse(url));
 
     request.fields['tema_kegiatan'] = temaController.text;
