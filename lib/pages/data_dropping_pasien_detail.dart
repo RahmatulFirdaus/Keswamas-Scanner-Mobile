@@ -104,6 +104,7 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
     return GestureDetector(
       onTap: toggleImageSize,
       child: Card(
+        color: Colors.white,
         elevation: 4,
         margin: const EdgeInsets.symmetric(vertical: 16),
         child: Column(
@@ -180,6 +181,7 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
 
   Widget buildInfoCard(String title, String value) {
     return Card(
+      color: Colors.white,
       elevation: 2,
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -212,8 +214,9 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: const Text('Detail Dropping Pasien'),
         elevation: 0,
       ),
@@ -283,13 +286,13 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
                           ),
                           const SizedBox(height: 16),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               buildInfoCard(
                                 'Tanggal Kegiatan',
                                 formatDate(
                                     droppingPasienDetail.tanggalKegiatan),
                               ),
-                              Spacer(),
                               buildInfoCard(
                                 'Tanggal Pembuatan',
                                 formatDate(
