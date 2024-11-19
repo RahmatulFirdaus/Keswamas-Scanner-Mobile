@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:archive/archive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:toastification/toastification.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DataDroppingPasienDetail extends StatefulWidget {
@@ -123,7 +124,30 @@ class _DataDroppingPasienDetailState extends State<DataDroppingPasienDetail> {
                     ),
                   ),
                   TextButton.icon(
-                    onPressed: () => downloadAndExtractZip(getFile.gambar),
+                    onPressed: () {
+                      if (extractedFiles.isNotEmpty) {
+                        toastification.show(
+                          alignment: Alignment.topCenter,
+                          autoCloseDuration: const Duration(seconds: 5),
+                          style: ToastificationStyle.flat,
+                          type: ToastificationType.info,
+                          icon: const Icon(Icons.info_outline),
+                          context: context,
+                          title: const Text("Gambar Sudah Ditampilkan"),
+                        );
+                      } else {
+                        downloadAndExtractZip(getFile.gambar);
+                        toastification.show(
+                          alignment: Alignment.topCenter,
+                          autoCloseDuration: const Duration(seconds: 2),
+                          style: ToastificationStyle.flat,
+                          type: ToastificationType.info,
+                          icon: const Icon(Icons.info_outline),
+                          context: context,
+                          title: const Text("Harap Di Tunggu"),
+                        );
+                      }
+                    },
                     icon: const Icon(Icons.open_in_new),
                     label: const Text('Display Image'),
                   ),

@@ -5,6 +5,7 @@ import 'package:final_keswamas/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
+import 'package:toastification/toastification.dart';
 
 class DataDroppingPasien extends StatefulWidget {
   final String username, password;
@@ -245,22 +246,21 @@ class _DataDroppingPasienState extends State<DataDroppingPasien> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         onPressed: () {
-          // dataDroppingPasien.isNotEmpty
-          //     ?
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const TambahDataDroppingPasien(),
-            ),
-          );
-          // : toastification.show(
-          //     alignment: Alignment.topCenter,
-          //     autoCloseDuration: const Duration(seconds: 5),
-          //     style: ToastificationStyle.flat,
-          //     type: ToastificationType.error,
-          //     icon: const Icon(Icons.error_outline),
-          //     context: context,
-          //     title: const Text("Kamu Tidak Memiliki Akses"),
-          //   );
+          dataDroppingPasien.isNotEmpty
+              ? Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const TambahDataDroppingPasien(),
+                  ),
+                )
+              : toastification.show(
+                  alignment: Alignment.topCenter,
+                  autoCloseDuration: const Duration(seconds: 5),
+                  style: ToastificationStyle.flat,
+                  type: ToastificationType.error,
+                  icon: const Icon(Icons.error_outline),
+                  context: context,
+                  title: const Text("Kamu Tidak Memiliki Akses"),
+                );
         },
         child: const Icon(
           Icons.add,
