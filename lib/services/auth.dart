@@ -6,7 +6,7 @@ class AuthService {
   final storage = const FlutterSecureStorage();
 
   Future<String?> login(String username, String password) async {
-    var url = Uri.parse('https://keswamas.sambanglihum.com/api/login');
+    var url = Uri.parse('http://192.168.1.3:3000/api/login');
     var response = await http.post(url,
         headers: {'Content-Type': 'application/json; charset=UTF-8'},
         body: jsonEncode({'username': username, 'password': password}));

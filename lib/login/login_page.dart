@@ -195,8 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                                   toastification.show(
                                     context: context,
                                     title: const Text("Login Gagal"),
-                                    description:
-                                        const Text("Terjadi Kesalahan"),
+                                    description: Text("Terjadi Kesalahan: $e"),
                                     type: ToastificationType.error,
                                     style: ToastificationStyle.flat,
                                     alignment: Alignment.topCenter,
